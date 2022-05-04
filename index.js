@@ -43,8 +43,26 @@ bot.onText(/\/help/, (msg) => {
   /start для добавления пользователя в базу или обновления его данных, например username
   /send для создания реквеста
   /help для вызова списка комманд
+  /to получить все полученые реквесты
+  /from получить все отправленые реквесты
   `
   bot.sendMessage(msg.chat.id, text)
+})
+
+bot.onText(/\/from/, (msg) => {
+  db.getRequestsFrom(msg.from.id).then((requests) => {
+    requests.forEach((req) => {
+      bot.sendMessage(msg.chat.id, requestMessage(req), requestOptions(req))
+    });
+  })
+})
+
+bot.onText(/\/to/, (msg) => {
+  db.getRequestsTo(msg.from.id).then((requests) => {
+    requests.forEach((req) => {
+      bot.sendMessage(msg.chat.id, requestMessage(req), requestOptions(req))
+    });
+  })
 })
 
 bot.on('callback_query', (query) => {
