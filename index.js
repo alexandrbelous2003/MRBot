@@ -52,7 +52,7 @@ bot.onText(/\/help/, (msg) => {
 bot.onText(/\/from/, (msg) => {
   db.getRequestsFrom(msg.from.id).then((requests) => {
     requests.forEach((req) => {
-      bot.sendMessage(msg.chat.id, requestMessage(req), requestOptions(req))
+      sendRequest(msg.from.id, req)
     });
   })
 })
@@ -60,7 +60,7 @@ bot.onText(/\/from/, (msg) => {
 bot.onText(/\/to/, (msg) => {
   db.getRequestsTo(msg.from.id).then((requests) => {
     requests.forEach((req) => {
-      bot.sendMessage(msg.chat.id, requestMessage(req), requestOptions(req))
+      sendRequest(msg.from.id, req)
     });
   })
 })
