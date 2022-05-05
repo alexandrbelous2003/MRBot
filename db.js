@@ -94,6 +94,7 @@ class DB {
 			const sql = `
 			update users
 			set username = '${user.username}', first_name = '${user.username}'
+			where id = "${user.id}"
 			returning *
 		`
 		this.db.all(sql, (err, rows) => {
