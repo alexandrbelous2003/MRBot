@@ -74,6 +74,22 @@ bot.onText(/\/complete/, (msg) => {
   })
 })
 
+bot.onText(/\/remark/, (msg) => {
+  db.getRequestRemark(msg.from.id).then((requests) => {
+    requests.forEach((req) => {
+      sendRequest(msg.from.id, req)
+    });
+  })
+})
+
+bot.onText(/\/fix/, (msg) => {
+  db.getCompletedFix(msg.from.id).then((requests) => {
+    requests.forEach((req) => {
+      sendRequest(msg.from.id, req)
+    });
+  })
+})
+
 bot.on('callback_query', (query) => {
   let command = query.data.split('_')[0]
   let id = query.data.split('_')[1]
@@ -170,7 +186,6 @@ function getText(to) {
 function sendRequest(to, req) {
   db.getUserById(req.from).then((usrFrom) => {
     db.getUserById(req.to).then((usrTo) => {
-      console.log(usrTo)
       const _date = new Date(req.date)
       const _date_str = `${_date.toLocaleString('default', { day: "numeric" ,month: 'long', hour: "numeric", minute: "numeric" })}`
       const text =`${req.url}\nстатус: ${req.status}\nот: ${usrFrom.first_name} ${usrFrom.username}\nкому: ${usrTo.first_name} ${usrTo.username}\nвремя: ${_date_str}\nзамечания: ${req.remark}\nисправления: ${req.fix}\n`

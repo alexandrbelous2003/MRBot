@@ -170,6 +170,56 @@ class DB {
 		})
 	}
 
+	getRequestRemark(id) {
+		return new Promise((resolve, reject) => {
+			const sql = `
+			select * from requests
+			where ("from" = "${id}" or "to" = "${id}") and status = "remark";
+			`
+
+			this.db.all(sql, (err, rows) => {
+				if(err) {
+					reject(err)
+				} else {
+					resolve(rows)
+				}
+			})
+		})
+	}
+
+	getRequestFix(id) {
+		return new Promise((resolve, reject) => {
+			const sql = `
+			select * from requests
+			where ("from" = "${id}" or "to" = "${id}") and status = "fix";
+			`
+
+			this.db.all(sql, (err, rows) => {
+				if(err) {
+					reject(err)
+				} else {
+					resolve(rows)
+				}
+			})
+		})
+	}
+
+	getRequestsToAndRemark(id) {
+		return new Promise((resolve, reject) => {
+			const sql = `
+				select * from requests
+				where "to"  = "${id}"  and status != 'complete' and statue == 'remark
+			`
+			this.db.all(sql, (err, rows) => {
+				if(err) {
+					reject(err)
+				} else {
+					resolve(rows)
+				}
+			})
+		})
+	}
+
 	createRequest(request) {
 		return new Promise(((resolve, reject) => {
 			const sql = `
