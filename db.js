@@ -126,7 +126,7 @@ class DB {
 		return new Promise((resolve, reject) => {
 			const sql = `
 				select * from requests
-				where "from" == "${id}" and "to"  = "${id}"  and status = 'complete'
+				where "from" = "${id}" and "to" = "${id}" and status = "complete"
 			`
 			this.db.all(sql, (err, rows) => {
 				if(err) {

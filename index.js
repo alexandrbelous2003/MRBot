@@ -45,6 +45,7 @@ bot.onText(/\/help/, (msg) => {
   /help для вызова списка комманд
   /to получить все полученые реквесты
   /from получить все отправленые реквесты
+  /complete получить все завершёные
   `
   bot.sendMessage(msg.chat.id, text)
 })
@@ -59,6 +60,14 @@ bot.onText(/\/from/, (msg) => {
 
 bot.onText(/\/to/, (msg) => {
   db.getRequestsTo(msg.from.id).then((requests) => {
+    requests.forEach((req) => {
+      sendRequest(msg.from.id, req)
+    });
+  })
+})
+
+bot.onText(/\/complete/, (msg) => {
+  db.getCompletedRequests(msg.from.id).then((requests) => {
     requests.forEach((req) => {
       sendRequest(msg.from.id, req)
     });
