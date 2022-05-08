@@ -20,7 +20,7 @@ bot.onText(/\/send/, (msg) => {
       bot.sendMessage(from, 'Введите ссылку');
       getText(from).then((url) => {
           newReq(from, to, url)
-        })
+      })
     })
   } else bot.sendMessage(msg.chat.id, 'Вы не выбрали пользователя')
 })
@@ -38,15 +38,7 @@ bot.onText(/\/start/, (msg) => {
 })
 
 bot.onText(/\/help/, (msg) => {
-  const text = 
-  `
-  /start для добавления пользователя в базу или обновления его данных, например username
-  /send для создания реквеста
-  /help для вызова списка комманд
-  /to получить все полученые реквесты
-  /from получить все отправленые реквесты
-  /complete получить все завершёные
-  `
+  const text = `/start для добавления пользователя в базу или обновления его данных, например username\n/send для создания реквеста\n/help для вызова списка комманд\n/from получить все отправленые мной реквесты\n/complete получить все завершёные реквесты, отправленные мной\n/to получить все реквесты назначенные мне\n/to-remark получить все реквесты назначенные мне со статусом замечанияn/to-fix получить все реквесты назначенные мне со статусом исправлено`
   bot.sendMessage(msg.chat.id, text)
 })
 
@@ -60,6 +52,14 @@ bot.onText(/\/from/, (msg) => {
 
 bot.onText(/\/to/, (msg) => {
   db.getRequestsTo(msg.from.id).then((requests) => {
+    requests.forEach((req) => {
+      sendRequest(msg.from.id, req)
+    });
+  })
+})
+
+bot.onText(/\/to-remark/, (msg) => {
+  db.getRequestsToAndRemark(msg.from.id).then((requests) => {
     requests.forEach((req) => {
       sendRequest(msg.from.id, req)
     });
@@ -171,19 +171,13 @@ function sendRequest(to, req) {
   db.getUserById(req.from).then((usrFrom) => {
     db.getUserById(req.to).then((usrTo) => {
       console.log(usrTo)
-      const text =`
-      код: ${req.id},
-      статус: ${req.status}
-      от: ${usrFrom.first_name} ${usrFrom.username}
-      кому: ${usrTo.first_name} ${usrTo.username}
-      время: ${req.date}
-      замечания: ${req.remark}
-      исправления: ${req.fix}
-      `
+      const _date = new Date(req.date)
+      const _date_str = `${_date.toLocaleString('default', { day: "numeric" ,month: 'long', hour: "numeric", minute: "numeric" })}`
+      const text =`${req.url}\nстатус: ${req.status}\nот: ${usrFrom.first_name} ${usrFrom.username}\nкому: ${usrTo.first_name} ${usrTo.username}\nвремя: ${_date_str}\nзамечания: ${req.remark}\nисправления: ${req.fix}\n`
       const options = {
         reply_markup: {
           inline_keyboard: [
-            [
+            [ 
               {
                 text: 'Замечания',
                 callback_data: ['remark', req.id].join('_')
