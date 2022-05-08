@@ -122,12 +122,27 @@ class DB {
 			})
 		})
 	}
+	getCompletedRequests(id) {
+		return new Promise((resolve, reject) => {
+			const sql = `
+				select * from requests
+				where "from" == "${id}" and "to"  = "${id}"  and status = 'complete'
+			`
+			this.db.all(sql, (err, rows) => {
+				if(err) {
+					reject(err)
+				} else {
+					resolve(rows)
+				}
+			})
+		})
+	}
 
 	getRequestsFrom(id) {
 		return new Promise((resolve, reject) => {
 			const sql = `
 				select * from requests
-				where "from" == "${id}"
+				where "from" == "${id}" and status != 'complete'
 			`
 			this.db.all(sql, (err, rows) => {
 				if(err) {
@@ -143,7 +158,7 @@ class DB {
 		return new Promise((resolve, reject) => {
 			const sql = `
 				select * from requests
-				where "to"  = "${id}"
+				where "to"  = "${id}"  and status != 'complete'
 			`
 			this.db.all(sql, (err, rows) => {
 				if(err) {
