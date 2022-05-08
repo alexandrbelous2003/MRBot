@@ -159,39 +159,42 @@ function getText(to) {
 }
 
 function sendRequest(to, req) {
-  const text = 
-  `
-  код: ${req.id},
-  статус: ${req.status}
-  от: ${req.from}
-  кому: ${req.to}
-  время: ${req.date}
-  замечания: ${req.remark}
-  исправления: ${req.fix}
-  `
+  db.getUserById(req.from).then((usrFrom) => {
+    db.getUserById(req.to).then((usrTo) => {
+      console.log(usrTo)
+      const text =`
+      код: ${req.id},
+      статус: ${req.status}
+      от: ${usrFrom.first_name} ${usrFrom.username}
+      кому: ${usrTo.first_name} ${usrTo.username}
+      время: ${req.date}
+      замечания: ${req.remark}
+      исправления: ${req.fix}
+      `
+      const options = {
+        reply_markup: {
+          inline_keyboard: [
+            [
+              {
+                text: 'Замечания',
+                callback_data: ['remark', req.id].join('_')
+              },
+              {
+                text: 'Исправлено',
+                callback_data: ['fix', req.id].join('_')
+              }
+            ],
+            [
+              {
+                text: 'Завершен',
+                callback_data: ['complete', req.id].join('_')
+              }
+            ]
+          ]
+        }
+      }
 
-  const options = {
-    reply_markup: {
-      inline_keyboard: [
-        [
-          {
-            text: 'remark',
-            callback_data: ['remark', req.id].join('_')
-          },
-          {
-            text: 'fix',
-            callback_data: ['fix', req.id].join('_')
-          }
-        ],
-        [
-          {
-            text: 'complete',
-            callback_data: ['complete', req.id].join('_')
-          }
-        ]
-      ]
-    }
-  }
-
-  bot.sendMessage(to, text, options)
+      bot.sendMessage(to, text, options)
+    })
+  })
 }
