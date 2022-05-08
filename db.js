@@ -128,8 +128,7 @@ class DB {
 				select * from requests
 				where "from" = "${id}" and status = "complete";
 				select * from requests
-				where "to" = "${id}" and status = "complete";
-				"
+				where "to" = "${id}" and status = "complete"
 			`
 			this.db.all(sql, (err, rows) => {
 				if(err) {
