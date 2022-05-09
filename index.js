@@ -126,7 +126,7 @@ bot.onText(/\/complete/, (msg) => {
         }
         if(requests.lenght > 10) {
           bot.sendMessage('Вывести ещё?');
-          getText(msg.from).then((answer) => {
+          getText(msg.from.id).then((answer) => {
           if(answer != 'да') {
             stop = true;
           }
