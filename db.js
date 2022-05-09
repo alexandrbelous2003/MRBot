@@ -1,10 +1,7 @@
-const sqlite3 = require('sqlite3')
 const { Pool, query } = require('pg')
 
 class DB {
 	constructor() {
-	//constructor(path) {
-		//this.db = new sqlite3.Database(path)
 		this.db = new Pool({
 			user: process.env.user,
 			host: process.env.host,
@@ -171,7 +168,6 @@ class DB {
 				select * from requests
 				where "to"  = '${id}'  and status != 'complete'
 			`
-			console.log(sql)
 			this.db.query(sql, (err, res) => {
 				if(err) {
 					reject(err)
@@ -188,7 +184,6 @@ class DB {
 			select * from requests
 			where ("from" = '${id}' or "to" = '${id}') and status = 'remark';
 			`
-
 			this.db.query(sql, (err, res) => {
 				if(err) {
 					reject(err)
@@ -205,7 +200,6 @@ class DB {
 			select * from requests
 			where ("from" = '${id}' or "to" = '${id}') and status = 'fix';
 			`
-
 			this.db.query(sql, (err, res) => {
 				if(err) {
 					reject(err)
