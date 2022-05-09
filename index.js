@@ -5,6 +5,8 @@ require('dotenv').config()
 const bot = new TG(process.env.token, { polling: true });
 const db = new DB(process.env.database_path);
 
+
+
 bot.onText(/\/send/, (msg) => {
   const from = msg.from.id;
   if(msg.entities[1]?.type === 'mention' || msg.entities[1]?.type === 'text_mention') {
@@ -38,7 +40,7 @@ bot.onText(/\/start/, (msg) => {
 })
 
 bot.onText(/\/help/, (msg) => {
-  const text = `/start для добавления пользователя в базу или обновления его данных, например username\n/send для создания реквеста\n/help для вызова списка комманд\n/from получить все отправленые мной реквесты\n/complete получить все завершёные реквесты, отправленные мной\n/to получить все реквесты назначенные мне\n/to-remark получить все реквесты назначенные мне со статусом замечанияn/to-fix получить все реквесты назначенные мне со статусом исправлено`
+  const text = `/start для добавления пользователя в базу или обновления его данных, например username\n/send для создания реквеста\n/help для вызова списка комманд\n/from получить все отправленые мной реквесты\n/complete получить все завершёные реквесты, отправленные мной\n/to получить все реквесты назначенные мне\n/remark получить все реквесты назначенные мне или для меня со статусом замечания\n/fix получить все реквесты назначенные мне и для меня со статусом исправлено`
   bot.sendMessage(msg.chat.id, text)
 })
 
@@ -83,7 +85,7 @@ bot.onText(/\/remark/, (msg) => {
 })
 
 bot.onText(/\/fix/, (msg) => {
-  db.getCompletedFix(msg.from.id).then((requests) => {
+  db.getRequestFix(msg.from.id).then((requests) => {
     requests.forEach((req) => {
       sendRequest(msg.from.id, req)
     });
