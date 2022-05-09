@@ -3,7 +3,8 @@ const DB = require('./db')
 require('dotenv').config()
 
 const bot = new TG(process.env.token, { polling: true });
-const db = new DB(process.env.database_path);
+//const db = new DB(process.env.database_path)
+const db = new DB()
 
 bot.setMyCommands([
   {
@@ -85,67 +86,11 @@ bot.onText(/\/to/, (msg) => {
   })
 })
 
-bot.onText(/\/to-remark/, (msg) => {
-  db.getRequestsToAndRemark(msg.from.id).then((requests) => {
+bot.onText(/\/complete/, (msg) => {
+  db.getCompletedRequests(msg.from.id).then((requests) => {
     requests.forEach((req) => {
       sendRequest(msg.from.id, req)
     });
-  })
-})
-
-bot.onText(/\/complete/, (msg) => {
-  db.getCompletedRequests(msg.from.id).then((requests) => {
-    i = 10;
-    let stop = false;
-    let arr = [];
-    requests.forEach((req) => arr.push(req))
-    for(let j = 0; j < arr.length; j++) {
-        if(stop) {
-          break;
-        }
-        if((j % 10) != '1') {
-          if(arr[j]) {
-            sendRequest(msg.from.id, arr[j]);  
-          }
-        }
-        else {
-          if(arr.lenght < 10) {
-            bot.sendMessage(msg.from.id, 'Вывести ещё?');
-            getText(msg.from.id).then((answer) => {
-            if(answer != 'да') {
-              stop = true
-            }
-          })
-        }
-      }
-    }/*
-    if(arr.length > 10) {
-      bot.sendMessage(msg.from.id, 'Вывести ещё?');
-      getText(msg.from.id).then((answer) => {
-      if(answer != 'да') {
-        stop = true;
-      }
-      else {
-        while(stop) {
-          console.log(3)
-              i += 10;
-              for(let j = i - 10; j < i; j++) {
-                if(arr[j]) {
-                  sendRequest(msg.from.id, arr[j]);  
-                }
-              }
-              if(requests.lenght > 10) {
-                bot.sendMessage(msg.from.id, 'Вывести ещё?');
-                getText(msg.from.id).then((answer) => {
-                if(answer != 'да') {
-                  stop = true;
-                }
-              })
-            }
-          }
-        }
-      })
-      }*/ 
   })
 })
 
