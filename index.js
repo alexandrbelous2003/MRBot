@@ -95,7 +95,7 @@ bot.onText(/\/complete/, (msg) => {
 })
 
 bot.onText(/\/remark/, (msg) => {
-  db.getRequestRemark(msg.from.id).then((requests) => {
+  db.getRemarkedRequest(msg.from.id).then((requests) => {
     requests.forEach((req) => {
       sendRequest(msg.from.id, req)
     });
@@ -103,7 +103,7 @@ bot.onText(/\/remark/, (msg) => {
 })
 
 bot.onText(/\/fix/, (msg) => {
-  db.getRequestFix(msg.from.id).then((requests) => {
+  db.getFixedRequest(msg.from.id).then((requests) => {
     requests.forEach((req) => {
       sendRequest(msg.from.id, req)
     });

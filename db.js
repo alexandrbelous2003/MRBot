@@ -182,7 +182,7 @@ class DB {
 		})
 	}
 
-	getRequestRemark(id) {
+	getRemarkedRequest(id) {
 		return new Promise((resolve, reject) => {
 			const sql = `
 			select * from requests
@@ -199,7 +199,7 @@ class DB {
 		})
 	}
 
-	getRequestFix(id) {
+	getFixedRequest(id) {
 		return new Promise((resolve, reject) => {
 			const sql = `
 			select * from requests
