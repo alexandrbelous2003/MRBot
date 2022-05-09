@@ -8,27 +8,27 @@ const db = new DB(process.env.database_path);
 bot.setMyCommands([
   {
     command: 'send',
-    description: '',
+    description: 'Отправить реквест',
   },
   {
     command: 'remark',
-    description: '',
+    description: 'Посмотреть все замечания отправленные мне или мной',
   },
   {
     command: 'fix',
-    description: '',
+    description: 'Посмотреть все исправления отправленные мне или мной',
   },
   {
     command: 'complete',
-    description: '',
+    description: 'Посмотреть все выполненные реквесты',
   },
   {
     command: 'from',
-    description: '',
+    description: 'Посмотреть все отправленные мной реквесты',
   },
   {
     command: 'to',
-    description: '',
+    description: 'Посмотреть все отправленные мне реквесты',
   }
 ]);
 
@@ -65,7 +65,7 @@ bot.onText(/\/start/, (msg) => {
 })
 
 bot.onText(/\/help/, (msg) => {
-  const text = `/start для добавления пользователя в базу или обновления его данных, например username\n/send для создания реквеста\n/help для вызова списка комманд\n/from получить все отправленые мной реквесты\n/complete получить все завершёные реквесты, отправленные мной\n/to получить все реквесты назначенные мне\n/to-remark получить все реквесты назначенные мне со статусом замечанияn/to-fix получить все реквесты назначенные мне со статусом исправлено`
+  const text = `/start для добавления пользователя в базу или обновления его данных, например username\n/send для создания реквеста\n/help для вызова списка комманд\n/from получить все отправленые мной реквесты\n/complete получить все завершёные реквесты, отправленные мной\n/to получить все реквесты назначенные мне\n/remark получить все реквесты назначенные мне или для меня со статусом замечания\n/fix получить все реквесты назначенные мне и для меня со статусом исправлено`
   bot.sendMessage(msg.chat.id, text)
 })
 
@@ -136,7 +136,7 @@ bot.onText(/\/remark/, (msg) => {
 })
 
 bot.onText(/\/fix/, (msg) => {
-  db.getCompletedFix(msg.from.id).then((requests) => {
+  db.getRequestFix(msg.from.id).then((requests) => {
     requests.forEach((req) => {
       sendRequest(msg.from.id, req)
     });

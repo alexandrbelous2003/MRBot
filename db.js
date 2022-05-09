@@ -174,7 +174,7 @@ class DB {
 		return new Promise((resolve, reject) => {
 			const sql = `
 			select * from requests
-			where ("from" = "${id}" or "to" = "${id}") and status = "remark";
+			where ("from" = "${id}" or "to" = "${id}") and status = 'remark';
 			`
 
 			this.db.all(sql, (err, rows) => {
@@ -191,7 +191,7 @@ class DB {
 		return new Promise((resolve, reject) => {
 			const sql = `
 			select * from requests
-			where ("from" = "${id}" or "to" = "${id}") and status = "fix";
+			where ("from" = "${id}" or "to" = "${id}") and status = 'fix';
 			`
 
 			this.db.all(sql, (err, rows) => {
