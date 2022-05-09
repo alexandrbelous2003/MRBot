@@ -97,9 +97,11 @@ bot.onText(/\/complete/, (msg) => {
   db.getCompletedRequests(msg.from.id).then((requests) => {
     i = 0;
     stop = false;
+    console.log(requests)
     do {
       for(let j = 0; j < i + 10; j++) {
-        sendRequest(msg.from.id, req[j]);
+        console.log(requests[j])
+        sendRequest(msg.from.id, requests[j]);
       }
       if(requests.lenght > 10) {
         bot.sendMessage('Вывести ещё?');
@@ -113,7 +115,7 @@ bot.onText(/\/complete/, (msg) => {
     } while(!stop) {
         i += 10;
         for(let j = 0; j < i + 10; j++) {
-          sendRequest(msg.from.id, req[j]);
+          sendRequest(msg.from.id, requests[j]);
         }
         if(requests.lenght > 10) {
           bot.sendMessage('Вывести ещё?');
