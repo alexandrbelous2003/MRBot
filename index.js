@@ -119,7 +119,7 @@ bot.onText(/\/complete/, (msg) => {
     } while(stop) {
       console.log(3)
         i += 10;
-        for(let j = 0; j < i; j++) {
+        for(let j = i - 10; j < i; j++) {
           if(arr[j]) {
             sendRequest(msg.from.id, arr[j]);  
           }
