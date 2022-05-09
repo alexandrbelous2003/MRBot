@@ -5,6 +5,33 @@ require('dotenv').config()
 const bot = new TG(process.env.token, { polling: true });
 const db = new DB(process.env.database_path);
 
+bot.setMyCommands([
+  {
+    command: 'send',
+    description: '',
+  },
+  {
+    command: 'remark',
+    description: '',
+  },
+  {
+    command: 'fix',
+    description: '',
+  },
+  {
+    command: 'complete',
+    description: '',
+  },
+  {
+    command: 'from',
+    description: '',
+  },
+  {
+    command: 'to',
+    description: '',
+  }
+]);
+
 bot.onText(/\/send/, (msg) => {
   const from = msg.from.id;
   if(msg.entities[1]?.type === 'mention' || msg.entities[1]?.type === 'text_mention') {
