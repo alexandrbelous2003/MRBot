@@ -108,7 +108,7 @@ bot.onText(/\/complete/, (msg) => {
       }
       if(arr.length > 10) {
         console.log(2)
-        bot.sendMessage('Вывести ещё?');
+        bot.sendMessage(msg.from.id, 'Вывести ещё?');
         getText(msg.from.id).then((answer) => {
         if(answer != 'да') {
           stop = true;
@@ -125,7 +125,7 @@ bot.onText(/\/complete/, (msg) => {
           }
         }
         if(requests.lenght > 10) {
-          bot.sendMessage('Вывести ещё?');
+          bot.sendMessage(msg.from.id, 'Вывести ещё?');
           getText(msg.from.id).then((answer) => {
           if(answer != 'да') {
             stop = true;
