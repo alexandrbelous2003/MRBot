@@ -95,27 +95,34 @@ bot.onText(/\/to-remark/, (msg) => {
 
 bot.onText(/\/complete/, (msg) => {
   db.getCompletedRequests(msg.from.id).then((requests) => {
-    i = 0;
-    stop = false;
-    console.log(requests)
+    i = 10;
+    let stop = false;
+    let arr = [];
+    requests.forEach((req) => arr.push(req))
     do {
-      for(let j = 0; j < i + 10; j++) {
-        console.log(requests[j])
-        sendRequest(msg.from.id, requests[j]);
+      console.log(1)
+      for(let j = 0; j < i; j++) {
+        if(arr[j]) {
+          sendRequest(msg.from.id, arr[j]);  
+        }
       }
-      if(requests.lenght > 10) {
+      if(arr.length > 10) {
+        console.log(2)
         bot.sendMessage('Вывести ещё?');
-        getText(msg.from).then((answer) => {
+        getText(msg.from.id).then((answer) => {
         if(answer != 'да') {
           stop = true;
         }
       })
       } 
       getText(msg.from);
-    } while(!stop) {
+    } while(stop) {
+      console.log(3)
         i += 10;
-        for(let j = 0; j < i + 10; j++) {
-          sendRequest(msg.from.id, requests[j]);
+        for(let j = 0; j < i; j++) {
+          if(arr[j]) {
+            sendRequest(msg.from.id, arr[j]);  
+          }
         }
         if(requests.lenght > 10) {
           bot.sendMessage('Вывести ещё?');
@@ -239,6 +246,7 @@ function getText(to) {
 }
 
 function sendRequest(to, req) {
+  console.log(req)
   db.getUserById(req.from).then((usrFrom) => {
     db.getUserById(req.to).then((usrTo) => {
       const _date = new Date(req.date)
