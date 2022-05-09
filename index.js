@@ -47,7 +47,7 @@ bot.onText(/\/send/, (msg) => {
     }).then((to) => {
       bot.sendMessage(from, 'Введите ссылку');
       getText(from).then((url) => {
-          newReq(from, to, url)
+        newReq(from, to, url)
       })
     })
   } else bot.sendMessage(msg.chat.id, 'Вы не выбрали пользователя')
@@ -58,9 +58,11 @@ bot.onText(/\/start/, (msg) => {
     if(!user) {
       db.createUser(msg.from)
       .then((user) => bot.sendMessage(msg.chat.id, `Попривествуем ${user.first_name}`))
+      .catch(() => bot.sendMessage(msg.chat.id, 'Не получилось добавить пользователя'))
     } else {
       db.updateUser(msg.from)
       .then((user) => bot.sendMessage(msg.chat.id, `Попривествуем ${user.first_name}`))
+      .catch(() => bot.sendMessage(msg.chat.id, 'Не получилось обновить пользователя'))
     }
   })
 })
@@ -75,6 +77,8 @@ bot.onText(/\/from/, (msg) => {
     requests.forEach((req) => {
       sendRequest(msg.from.id, req)
     });
+  }).catch(() => {
+    bot.sendMessage(msg.chat.id, 'Не получилось получить реквесты')
   })
 })
 
@@ -83,6 +87,8 @@ bot.onText(/\/to/, (msg) => {
     requests.forEach((req) => {
       sendRequest(msg.from.id, req)
     });
+  }).catch(() => {
+    bot.sendMessage(msg.chat.id, 'Не получилось получить реквесты')
   })
 })
 
@@ -91,6 +97,8 @@ bot.onText(/\/complete/, (msg) => {
     requests.forEach((req) => {
       sendRequest(msg.from.id, req)
     });
+  }).catch(() => {
+    bot.sendMessage(msg.chat.id, 'Не получилось получить реквесты')
   })
 })
 
@@ -99,6 +107,8 @@ bot.onText(/\/remark/, (msg) => {
     requests.forEach((req) => {
       sendRequest(msg.from.id, req)
     });
+  }).catch(() => {
+    bot.sendMessage(msg.chat.id, 'Не получилось получить реквесты')
   })
 })
 
@@ -107,6 +117,8 @@ bot.onText(/\/fix/, (msg) => {
     requests.forEach((req) => {
       sendRequest(msg.from.id, req)
     });
+  }).catch(() => {
+    bot.sendMessage(msg.chat.id, 'Не получилось получить реквесты')
   })
 })
 
@@ -139,6 +151,7 @@ bot.on('callback_query', (query) => {
 bot.on('new_chat_members', (msg) => {
   db.createUser(msg.new_chat_members)
     .then((user) => bot.sendMessage(msg.chat.id, `Попривествуем ${user.first_name}`))
+    .catch(msg.chat.id, 'Не получилось создать пользователя')
 })
 
 function newReq(from, to, url) {
@@ -151,7 +164,8 @@ function newReq(from, to, url) {
   db.createRequest(request).then((req) => {
     sendRequest(to, req)
   }).catch(error => {
-
+    console.log(error)
+    bot.sendMessage(from, 'Не получилось создать реквест')
   })
 }
 
@@ -162,7 +176,7 @@ function remarkReq(from, id, remark) {
     } else {
       db.remarkRequest(id, remark).then((req) => {
         sendRequest(req.from, req)
-      })
+      }).catch(() => bot.sendMessage(from, 'Не получилось обновить или отправить реквест'))
     }
   })
 }
@@ -174,7 +188,7 @@ function fixReq(from, id, fix) {
     } else {
       db.fixRequest(id, fix).then((req) => {
         sendRequest(req.to, req)
-      })
+      }).catch(() => bot.sendMessage(from, 'Не получилось обновить или отправить реквест'))
     }
   })
 }
@@ -186,7 +200,7 @@ function completeReq(from, id) {
     } else {
       db.completeRequest(id).then((req) => {
         sendRequest(req.from, req)
-      })
+      }).catch(() => bot.sendMessage(from, 'Не получилось обновить или отправить реквест'))
     }
   })
 }
