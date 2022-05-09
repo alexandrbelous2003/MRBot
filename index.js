@@ -99,22 +99,35 @@ bot.onText(/\/complete/, (msg) => {
     let stop = false;
     let arr = [];
     requests.forEach((req) => arr.push(req))
-      console.log(1)
-      for(let j = 0; j < i; j++) {
-        if(arr[j]) {
-          sendRequest(msg.from.id, arr[j]);  
+    for(let j = 0; j < i; j++) {
+        if(stop) {
+          break;
         }
-      }
-      if(arr.length > 10) {
-        console.log(2)
-        bot.sendMessage(msg.from.id, 'Вывести ещё?');
-        getText(msg.from.id).then((answer) => {
-        if(answer != 'да') {
-          stop = true;
+        if((j % 10) != '1') {
+          if(arr[j]) {
+            sendRequest(msg.from.id, arr[j]);  
+          }
         }
         else {
-          while(stop) {
-            console.log(3)
+          if(arr.lenght < 10) {
+            bot.sendMessage(msg.from.id, 'Вывести ещё?');
+            getText(msg.from.id).then((answer) => {
+            if(answer != 'да') {
+              stop = true
+            }
+          })
+        }
+      }
+    }/*
+    if(arr.length > 10) {
+      bot.sendMessage(msg.from.id, 'Вывести ещё?');
+      getText(msg.from.id).then((answer) => {
+      if(answer != 'да') {
+        stop = true;
+      }
+      else {
+        while(stop) {
+          console.log(3)
               i += 10;
               for(let j = i - 10; j < i; j++) {
                 if(arr[j]) {
@@ -132,7 +145,7 @@ bot.onText(/\/complete/, (msg) => {
           }
         }
       })
-      } 
+      }*/ 
   })
 })
 
