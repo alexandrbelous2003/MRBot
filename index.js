@@ -95,9 +95,35 @@ bot.onText(/\/to-remark/, (msg) => {
 
 bot.onText(/\/complete/, (msg) => {
   db.getCompletedRequests(msg.from.id).then((requests) => {
-    requests.forEach((req) => {
-      sendRequest(msg.from.id, req)
-    });
+    i = 0;
+    stop = false;
+    do {
+      for(let j = 0; j < i + 10; j++) {
+        sendRequest(msg.from.id, req[j]);
+      }
+      if(requests.lenght > 10) {
+        bot.sendMessage('Вывести ещё?');
+        getText(msg.from).then((answer) => {
+        if(answer != 'да') {
+          stop = true;
+        }
+      })
+      } 
+      getText(msg.from);
+    } while(!stop) {
+        i += 10;
+        for(let j = 0; j < i + 10; j++) {
+          sendRequest(msg.from.id, req[j]);
+        }
+        if(requests.lenght > 10) {
+          bot.sendMessage('Вывести ещё?');
+          getText(msg.from).then((answer) => {
+          if(answer != 'да') {
+            stop = true;
+          }
+        })
+      }
+    }
   })
 })
 
