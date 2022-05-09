@@ -5,7 +5,32 @@ require('dotenv').config()
 const bot = new TG(process.env.token, { polling: true });
 const db = new DB(process.env.database_path);
 
-
+bot.setMyCommands([
+  {
+    command: 'send',
+    description: 'Отправить реквест',
+  },
+  {
+    command: 'remark',
+    description: 'Посмотреть все замечания отправленные мне или мной',
+  },
+  {
+    command: 'fix',
+    description: 'Посмотреть все исправления отправленные мне или мной',
+  },
+  {
+    command: 'complete',
+    description: 'Посмотреть все выполненные реквесты',
+  },
+  {
+    command: 'from',
+    description: 'Посмотреть все отправленные мной реквесты',
+  },
+  {
+    command: 'to',
+    description: 'Посмотреть все отправленные мне реквесты',
+  }
+]);
 
 bot.onText(/\/send/, (msg) => {
   const from = msg.from.id;
