@@ -99,7 +99,6 @@ bot.onText(/\/complete/, (msg) => {
     let stop = false;
     let arr = [];
     requests.forEach((req) => arr.push(req))
-    do {
       console.log(1)
       for(let j = 0; j < i; j++) {
         if(arr[j]) {
@@ -113,26 +112,27 @@ bot.onText(/\/complete/, (msg) => {
         if(answer != 'да') {
           stop = true;
         }
-      })
-      } 
-      getText(msg.from);
-    } while(stop) {
-      console.log(3)
-        i += 10;
-        for(let j = i - 10; j < i; j++) {
-          if(arr[j]) {
-            sendRequest(msg.from.id, arr[j]);  
+        else {
+          while(stop) {
+            console.log(3)
+              i += 10;
+              for(let j = i - 10; j < i; j++) {
+                if(arr[j]) {
+                  sendRequest(msg.from.id, arr[j]);  
+                }
+              }
+              if(requests.lenght > 10) {
+                bot.sendMessage(msg.from.id, 'Вывести ещё?');
+                getText(msg.from.id).then((answer) => {
+                if(answer != 'да') {
+                  stop = true;
+                }
+              })
+            }
           }
         }
-        if(requests.lenght > 10) {
-          bot.sendMessage(msg.from.id, 'Вывести ещё?');
-          getText(msg.from.id).then((answer) => {
-          if(answer != 'да') {
-            stop = true;
-          }
-        })
-      }
-    }
+      })
+      } 
   })
 })
 
