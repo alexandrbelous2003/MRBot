@@ -99,7 +99,7 @@ bot.onText(/\/complete/, (msg) => {
     let stop = false;
     let arr = [];
     requests.forEach((req) => arr.push(req))
-    for(let j = 0; j < i; j++) {
+    for(let j = 0; j < arr.length; j++) {
         if(stop) {
           break;
         }
