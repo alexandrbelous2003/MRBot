@@ -3,7 +3,6 @@ const DB = require('./db')
 require('dotenv').config()
 
 const bot = new TG(process.env.token, { polling: true });
-//const db = new DB(process.env.database_path)
 const db = new DB()
 
 bot.setMyCommands([
@@ -218,7 +217,6 @@ function getText(to) {
 }
 
 function sendRequest(to, req) {
-  console.log(req)
   db.getUserById(req.from).then((usrFrom) => {
     db.getUserById(req.to).then((usrTo) => {
       const _date = new Date(req.date)
