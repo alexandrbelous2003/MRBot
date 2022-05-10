@@ -1,21 +1,8 @@
 version: '3'
 services:
-  postgres:
-    image: postgres:14.1-alpine
-    restart: always
-    environment:
-      - POSTGRES_USER=root
-      - POSTGRES_PASSWORD=root
-      - POSTGRES_DB=postgres
-    ports:
-      - "5432:5432"
-    volumes:
-      - ./database-seed.sql:/docker-entrypoint-initdb.d/database-seed.sql
   bot:
     build: .
     image: alex1234567alex/bot:14
-    depends_on: 
-      - postgres
     volumes:
       - ./:/usr/src/app
       - /usr/src/app/node_modules  
