@@ -63,7 +63,7 @@ bot.onText(/\/start/, (msg) => {
       .then((user) => bot.sendMessage(msg.chat.id, `Попривествуем ${user.first_name}`))
       .catch(() => bot.sendMessage(msg.chat.id, 'Не получилось обновить пользователя'))
     }
-  })
+  }).catch(() => bot.sendMessage('Не получилось получить пользователя')) 
 })
 
 bot.onText(/\/help/, (msg) => {

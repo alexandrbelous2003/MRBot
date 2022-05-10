@@ -1,14 +1,14 @@
-const { Pool, query } = require('pg')
+const { Pool, Client, query } = require('pg')
 
 class DB {
 	constructor() {
 		this.db = new Pool({
+			password: process.env.password,
 			user: process.env.user,
 			host: process.env.host,
-			database: process.env.database,
-			password: process.env.password,
-			port: process.env.port,
-		})
+			port: process.env.port
+		});
+		this.db.connect()
 		this._createTables()
 	}
 
@@ -51,12 +51,10 @@ class DB {
 			select * from users
 			where id = '${id}'
 		`
-			console.log(sql)
 			this.db.query(sql, (err, res) => {
 				if(err) {
 					reject(err)
 				} else {
-					console.log(res.res)
 					resolve(res.rows[0])
 				}
 			})
