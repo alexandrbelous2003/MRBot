@@ -3,7 +3,7 @@ const DB = require('./db')
 require('dotenv').config()
 
 const bot = new TG(process.env.token, { polling: true });
-const db = new DB(process.env.database_path);
+const db = new DB()
 
 bot.setMyCommands([
   {
@@ -46,7 +46,7 @@ bot.onText(/\/send/, (msg) => {
     }).then((to) => {
       bot.sendMessage(from, 'Введите ссылку');
       getText(from).then((url) => {
-          newReq(from, to, url)
+        newReq(from, to, url)
       })
     })
   } else bot.sendMessage(msg.chat.id, 'Вы не выбрали пользователя')
@@ -57,9 +57,11 @@ bot.onText(/\/start/, (msg) => {
     if(!user) {
       db.createUser(msg.from)
       .then((user) => bot.sendMessage(msg.chat.id, `Попривествуем ${user.first_name}`))
+      .catch(() => bot.sendMessage(msg.chat.id, 'Не получилось добавить пользователя'))
     } else {
       db.updateUser(msg.from)
       .then((user) => bot.sendMessage(msg.chat.id, `Попривествуем ${user.first_name}`))
+      .catch(() => bot.sendMessage(msg.chat.id, 'Не получилось обновить пользователя'))
     }
   })
 })
@@ -74,6 +76,8 @@ bot.onText(/\/from/, (msg) => {
     requests.forEach((req) => {
       sendRequest(msg.from.id, req)
     });
+  }).catch(() => {
+    bot.sendMessage(msg.chat.id, 'Не получилось получить реквесты')
   })
 })
 
@@ -82,14 +86,8 @@ bot.onText(/\/to/, (msg) => {
     requests.forEach((req) => {
       sendRequest(msg.from.id, req)
     });
-  })
-})
-
-bot.onText(/\/to-remark/, (msg) => {
-  db.getRequestsToAndRemark(msg.from.id).then((requests) => {
-    requests.forEach((req) => {
-      sendRequest(msg.from.id, req)
-    });
+  }).catch(() => {
+    bot.sendMessage(msg.chat.id, 'Не получилось получить реквесты')
   })
 })
 
@@ -101,19 +99,33 @@ bot.onText(/\/complete/, (msg) => {
   })
 })
 
-bot.onText(/\/remark/, (msg) => {
-  db.getRequestRemark(msg.from.id).then((requests) => {
+bot.onText(/\/complete/, (msg) => {
+  db.getCompletedRequests(msg.from.id).then((requests) => {
     requests.forEach((req) => {
       sendRequest(msg.from.id, req)
     });
+  }).catch(() => {
+    bot.sendMessage(msg.chat.id, 'Не получилось получить реквесты')
+  })
+})
+
+bot.onText(/\/remark/, (msg) => {
+  db.getRemarkedRequest(msg.from.id).then((requests) => {
+    requests.forEach((req) => {
+      sendRequest(msg.from.id, req)
+    });
+  }).catch(() => {
+    bot.sendMessage(msg.chat.id, 'Не получилось получить реквесты')
   })
 })
 
 bot.onText(/\/fix/, (msg) => {
-  db.getRequestFix(msg.from.id).then((requests) => {
+  db.getFixedRequest(msg.from.id).then((requests) => {
     requests.forEach((req) => {
       sendRequest(msg.from.id, req)
     });
+  }).catch(() => {
+    bot.sendMessage(msg.chat.id, 'Не получилось получить реквесты')
   })
 })
 
@@ -146,6 +158,7 @@ bot.on('callback_query', (query) => {
 bot.on('new_chat_members', (msg) => {
   db.createUser(msg.new_chat_members)
     .then((user) => bot.sendMessage(msg.chat.id, `Попривествуем ${user.first_name}`))
+    .catch(msg.chat.id, 'Не получилось создать пользователя')
 })
 
 function newReq(from, to, url) {
@@ -158,7 +171,8 @@ function newReq(from, to, url) {
   db.createRequest(request).then((req) => {
     sendRequest(to, req)
   }).catch(error => {
-
+    console.log(error)
+    bot.sendMessage(from, 'Не получилось создать реквест')
   })
 }
 
@@ -169,7 +183,7 @@ function remarkReq(from, id, remark) {
     } else {
       db.remarkRequest(id, remark).then((req) => {
         sendRequest(req.from, req)
-      })
+      }).catch(() => bot.sendMessage(from, 'Не получилось обновить или отправить реквест'))
     }
   })
 }
@@ -181,7 +195,7 @@ function fixReq(from, id, fix) {
     } else {
       db.fixRequest(id, fix).then((req) => {
         sendRequest(req.to, req)
-      })
+      }).catch(() => bot.sendMessage(from, 'Не получилось обновить или отправить реквест'))
     }
   })
 }
@@ -193,7 +207,7 @@ function completeReq(from, id) {
     } else {
       db.completeRequest(id).then((req) => {
         sendRequest(req.from, req)
-      })
+      }).catch(() => bot.sendMessage(from, 'Не получилось обновить или отправить реквест'))
     }
   })
 }
@@ -211,7 +225,6 @@ function getText(to) {
 }
 
 function sendRequest(to, req) {
-  console.log(req)
   db.getUserById(req.from).then((usrFrom) => {
     db.getUserById(req.to).then((usrTo) => {
       const _date = new Date(req.date)

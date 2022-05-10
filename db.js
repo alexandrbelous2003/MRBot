@@ -1,8 +1,14 @@
-const sqlite3 = require('sqlite3')
+const { Pool, query } = require('pg')
 
 class DB {
-	constructor(path) {
-		this.db = new sqlite3.Database(path)
+	constructor() {
+		this.db = new Pool({
+			user: process.env.user,
+			host: process.env.host,
+			database: process.env.database,
+			password: process.env.password,
+			port: process.env.port,
+		})
 		this._createTables()
 	}
 
@@ -14,9 +20,9 @@ class DB {
 	_createRequestsTable() {
 		const sql = `
 			create table if not exists requests(
-				id integer primary key autoincrement,
-				'from' text,
-				'to' text,
+				id serial primary key,
+				"from" text,
+				"to" text,
 				url text,
 				status text,
 				date text,
@@ -24,7 +30,7 @@ class DB {
 				fix text
 			)
 		`
-		this.db.run(sql)
+		this.db.query(sql)
 	}
 
 	_createUsersTable() {
@@ -36,20 +42,22 @@ class DB {
 				last_name text
 			)
 		`
-		this.db.run(sql)
+		this.db.query(sql)
 	}
 
 	getUserById(id) {
 		return new Promise(((resolve, reject) => {
 			const sql = `
 			select * from users
-			where id = ${id}
+			where id = '${id}'
 		`
-			this.db.all(sql, (err, rows) => {
+			console.log(sql)
+			this.db.query(sql, (err, res) => {
 				if(err) {
 					reject(err)
 				} else {
-					resolve(rows[0])
+					console.log(res.res)
+					resolve(res.rows[0])
 				}
 			})
 		}))
@@ -59,13 +67,13 @@ class DB {
 		return new Promise(((resolve, reject) => {
 			const sql = `
 			select * from users
-			where username = ?
+			where username = '${username}'
 		`
-			this.db.all(sql, username, (err, rows) => {
+			this.db.query(sql, (err, res) => {
 				if(err) {
 					reject(err)
 				} else {
-					resolve(rows[0])
+					resolve(res.rows[0])
 				}
 			})
 		}))
@@ -79,11 +87,11 @@ class DB {
 			values('${user.id}', '${user.username}', '${user.first_name}')
 			returning *
 		`
-		this.db.all(sql, (err, rows) => {
+		this.db.query(sql, (err, res) => {
 				if(err) {
 					reject(err)
 				} else {
-					resolve(rows[0])
+					resolve(res.rows[0])
 				}
 			})
 		})
@@ -93,15 +101,15 @@ class DB {
 		return new Promise((resolve, reject) => {
 			const sql = `
 			update users
-			set username = '${user.username}', first_name = '${user.username}'
-			where id = "${user.id}"
+			set username = '${user.username}', first_name = '${user.first_name}'
+			where id = '${user.id}'
 			returning *
 		`
-		this.db.all(sql, (err, rows) => {
+		this.db.query(sql, (err, res) => {
 				if(err) {
 					reject(err)
 				} else {
-					resolve(rows[0])
+					resolve(res.rows[0])
 				}
 			})
 		})
@@ -113,11 +121,11 @@ class DB {
 				select * from requests
 				where id  = ${id}
 			`
-			this.db.all(sql, (err, rows) => {
+			this.db.query(sql, (err, res) => {
 				if(err) {
 					reject(err)
 				} else {
-					resolve(rows[0])
+					resolve(res.rows[0])
 				}
 			})
 		})
@@ -126,13 +134,13 @@ class DB {
 		return new Promise((resolve, reject) => {
 			const sql = `
 				select * from requests
-				where ("from" = "${id}" or "to" = "${id}") and status = "complete";
+				where ("from" = '${id}' or "to" = '${id}') and status = 'complete';
 			`
-			this.db.all(sql, (err, rows) => {
+			this.db.query(sql, (err, res) => {
 				if(err) {
 					reject(err)
 				} else {
-					resolve(rows)
+					resolve(res.rows)
 				}
 			})
 		})
@@ -142,13 +150,13 @@ class DB {
 		return new Promise((resolve, reject) => {
 			const sql = `
 				select * from requests
-				where "from" == "${id}" and status != 'complete'
+				where "from" = '${id}' and status != 'complete'
 			`
-			this.db.all(sql, (err, rows) => {
+			this.db.query(sql, (err, res) => {
 				if(err) {
 					reject(err)
 				} else {
-					resolve(rows)
+					resolve(res.rows)
 				}
 			})
 		})
@@ -158,63 +166,45 @@ class DB {
 		return new Promise((resolve, reject) => {
 			const sql = `
 				select * from requests
-				where "to"  = "${id}"  and status != 'complete'
+				where "to"  = '${id}'  and status != 'complete'
 			`
-			this.db.all(sql, (err, rows) => {
+			this.db.query(sql, (err, res) => {
 				if(err) {
 					reject(err)
 				} else {
-					resolve(rows)
+					resolve(res.rows)
 				}
 			})
 		})
 	}
 
-	getRequestRemark(id) {
+	getRemarkedRequest(id) {
 		return new Promise((resolve, reject) => {
 			const sql = `
 			select * from requests
-			where ("from" = "${id}" or "to" = "${id}") and status = 'remark';
+			where ("from" = '${id}' or "to" = '${id}') and status = 'remark';
 			`
-
-			this.db.all(sql, (err, rows) => {
+			this.db.query(sql, (err, res) => {
 				if(err) {
 					reject(err)
 				} else {
-					resolve(rows)
+					resolve(res.rows)
 				}
 			})
 		})
 	}
 
-	getRequestFix(id) {
+	getFixedRequest(id) {
 		return new Promise((resolve, reject) => {
 			const sql = `
 			select * from requests
-			where ("from" = "${id}" or "to" = "${id}") and status = 'fix';
+			where ("from" = '${id}' or "to" = '${id}') and status = 'fix';
 			`
-
-			this.db.all(sql, (err, rows) => {
+			this.db.query(sql, (err, res) => {
 				if(err) {
 					reject(err)
 				} else {
-					resolve(rows)
-				}
-			})
-		})
-	}
-
-	getRequestsToAndRemark(id) {
-		return new Promise((resolve, reject) => {
-			const sql = `
-				select * from requests
-				where "to"  = "${id}"  and status != 'complete' and statue == 'remark
-			`
-			this.db.all(sql, (err, rows) => {
-				if(err) {
-					reject(err)
-				} else {
-					resolve(rows)
+					resolve(res.rows)
 				}
 			})
 		})
@@ -224,15 +214,15 @@ class DB {
 		return new Promise(((resolve, reject) => {
 			const sql = `
 			insert into requests
-			('from', 'to', url, date, status, remark, fix)
-			values(${request.from}, '${request.to}', '${request.url}', '${request.date}', 'new', '', '')
+			("from", "to", url, date, status, remark, fix)
+			values('${request.from}', '${request.to}', '${request.url}', '${request.date}', 'new', '', '')
 			returning *
 			`
-			this.db.all(sql,(err, rows) => { 
+			this.db.query(sql,(err, res) => { 
 				if(err) {
 					reject(err)
 				} else {
-					resolve(rows[0])
+					resolve(res.rows[0])
 				}
 			})
 		}))
@@ -247,11 +237,11 @@ class DB {
 				where id = ${id}
 				returning *
 			`
-			this.db.all(sql, (err, rows) => {
+			this.db.query(sql, (err, res) => {
 				if(err) {
 					reject(err)
 				} else {
-					resolve(rows[0])
+					resolve(res.rows[0])
 				}
 			})
 		})
@@ -265,11 +255,11 @@ class DB {
 				where id = ${id}
 				returning *
 			`
-			this.db.all(sql, (err, rows) => {
+			this.db.query(sql, (err, res) => {
 				if(err) {
 					reject(err)
 				} else {
-					resolve(rows[0])
+					resolve(res.rows[0])
 				}
 			})
 		})
@@ -283,11 +273,11 @@ class DB {
 				where id = ${id}
 				returning *
 			`
-			this.db.all(sql, (err, rows) => {
+			this.db.query(sql, (err, res) => {
 				if(err) {
 					reject(err)
 				} else {
-					resolve(rows[0])
+					resolve(res.rows[0])
 				}
 			})
 		})
