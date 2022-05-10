@@ -96,14 +96,6 @@ bot.onText(/\/complete/, (msg) => {
     requests.forEach((req) => {
       sendRequest(msg.from.id, req)
     });
-  })
-})
-
-bot.onText(/\/complete/, (msg) => {
-  db.getCompletedRequests(msg.from.id).then((requests) => {
-    requests.forEach((req) => {
-      sendRequest(msg.from.id, req)
-    });
   }).catch(() => {
     bot.sendMessage(msg.chat.id, 'Не получилось получить реквесты')
   })
