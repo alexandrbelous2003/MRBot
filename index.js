@@ -33,26 +33,25 @@ bot.setMyCommands([
 ]);
 
 bot.onText(/\/send/, (msg) => {
-  console.log(msg)
   const from = msg.from.id;
-  msg.entities.forEach((entity, id) => {
-  if(entity?.type === 'mention' || entity?.type === 'text_mention') {
-    new Promise((resolve, reject) => {
-      if(entity?.type !== 'mention') {
-          resolve(entity?.user?.id)
-        } else {
-          db.getUserByUsername(msg.text.split(' ')[id]?.split('@')[id]).then(user => {
-          resolve(Number(user.id))
-        }).catch(() => bot.sendMessage(from, 'Пользователь не найден'))
+  bot.sendMessage(from, 'Введите ссылку');
+  getText(from).then((url) => {
+    msg.entities.forEach((entity, id) => {
+      if(entity?.type === 'mention' || entity?.type === 'text_mention') {
+        new Promise((resolve, reject) => {
+          if(entity?.type !== 'mention') {
+              resolve(entity?.user?.id)
+            } else {
+              db.getUserByUsername(msg.text.split(' ')[id]?.split('@')[id]).then(user => {
+              resolve(Number(user.id))
+            }).catch(() => bot.sendMessage(from, 'Пользователь не найден'))
+          }
+        }).then((to) => {
+            newReq(from, to, url)
+        })
       }
-    }).then((to) => {
-      bot.sendMessage(from, 'Введите ссылку');
-      getText(from).then((url) => {
-        newReq(from, to, url)
-      })
     })
-  }
-})
+  })
 })
 
 
