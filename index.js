@@ -33,13 +33,15 @@ bot.setMyCommands([
 ]);
 
 bot.onText(/\/send/, (msg) => {
+  console.log(msg)
   const from = msg.from.id;
-  if(msg.entities[1]?.type === 'mention' || msg.entities[1]?.type === 'text_mention') {
+  msg.entities.forEach((entity, id) => {
+  if(entity?.type === 'mention' || entity?.type === 'text_mention') {
     new Promise((resolve, reject) => {
-      if(msg.entities[1]?.type !== 'mention') {
-          resolve(msg.entities[1]?.user?.id)
+      if(entity?.type !== 'mention') {
+          resolve(entity?.user?.id)
         } else {
-          db.getUserByUsername(msg.text.split(' ')[1]?.split('@')[1]).then(user => {
+          db.getUserByUsername(msg.text.split(' ')[id]?.split('@')[id]).then(user => {
           resolve(Number(user.id))
         }).catch(() => bot.sendMessage(from, 'Пользователь не найден'))
       }
@@ -49,8 +51,10 @@ bot.onText(/\/send/, (msg) => {
         newReq(from, to, url)
       })
     })
-  } else bot.sendMessage(msg.chat.id, 'Вы не выбрали пользователя')
+  }
 })
+})
+
 
 bot.onText(/\/start/, (msg) => {
   db.getUserById(msg.from.id).then((user) => {
