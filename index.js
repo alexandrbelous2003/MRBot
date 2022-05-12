@@ -42,7 +42,7 @@ bot.onText(/\/send/, (msg) => {
           if(entity?.type !== 'mention') {
               resolve(entity?.user?.id)
             } else {
-              db.getUserByUsername(msg.text.split(' ')[id]?.split('@')[id]).then(user => {
+              db.getUserByUsername(msg.text.split(' ')[id]?.split('@')[1]).then(user => {
               resolve(Number(user.id))
             }).catch(() => bot.sendMessage(from, 'Пользователь не найден'))
           }
